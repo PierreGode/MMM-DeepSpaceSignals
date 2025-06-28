@@ -1,0 +1,18 @@
+.dss-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.dss-row td {
+  padding: 4px 6px;
+}
+
+.dss-row.red { background-color: rgba(255,0,0,0.2); }
+.dss-row.yellow { background-color: rgba(255,255,0,0.2); }
+.dss-row.green { background-color: rgba(0,255,0,0.2); }
+
+.dss-link a {
+  color: inherit;
+  text-decoration: underline;
+}
