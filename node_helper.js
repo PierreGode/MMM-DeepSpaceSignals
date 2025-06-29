@@ -224,7 +224,9 @@ module.exports = NodeHelper.create({
         time: data.date,
         intensity: data.title || "",
         url: data.url || data.hdurl || "",
-        level: "blue"
+        level: "blue",
+        media_type: data.media_type,
+        description: data.explanation || ""
       }];
 
       console.log('[DSS helper] APOD fetched', result.length);
