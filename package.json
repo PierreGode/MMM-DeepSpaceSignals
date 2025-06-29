@@ -4,6 +4,7 @@
   "description": "MagicMirror module displaying deep space signal alerts",
   "main": "MMM-DeepSpaceSignals.js",
   "dependencies": {
-    "xml2js": "^0.6.2"
+    "xml2js": "^0.6.2",
+    "node-fetch": "^2.6.11"
   }
 }
