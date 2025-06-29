@@ -114,12 +114,16 @@ module.exports = NodeHelper.create({
         return [];
       }
 
-      const result = Object.values(data.events || {}).map(ev => ({
+      // data.events is expected to be an object; convert to array
+      const eventsObj = data.events || {};
+      const eventsArray = Array.isArray(eventsObj) ? eventsObj : Object.values(eventsObj);
+
+      const result = eventsArray.map(ev => ({
         type: "GW",
-        time: ev.time,
-        intensity: ev.significance,
-        url: ev.url,
-        level: ev.significance > 0.9 ? "red" : "yellow"
+        time: ev.time || ev.event_time || "",
+        intensity: ev.significance || ev.false_alarm_rate || 0,
+        url: ev.url || ev.link || "",
+        level: (ev.significance && ev.significance > 0.9) ? "red" : "yellow"
       }));
 
       console.log('[DSS helper] GW events fetched', result.length);
@@ -134,6 +138,10 @@ module.exports = NodeHelper.create({
   async fetchPulsar() {
     try {
       const url = this.config.apiUrls?.pulsar || "";
+      if (!url) {
+        // No URL configured for pulsar; return empty array
+        return [];
+      }
       const res = await fetch(url);
       if (!res.ok) {
         console.error("[DSS helper] Pulsar fetch HTTP", res.status);
@@ -149,12 +157,13 @@ module.exports = NodeHelper.create({
         return [];
       }
 
-      const records = json.records || [];
+      // Assuming the XML structure has a root 'records' element containing pulsar entries
+      const records = (json.records && json.records.record) || [];
       const result = records.map(p => ({
         type: "Pulsar",
-        time: p.observationTime[0],
-        intensity: p.intensity[0],
-        url: p.link[0],
+        time: p.observationTime ? p.observationTime[0] : "",
+        intensity: p.intensity ? p.intensity[0] : "",
+        url: p.link ? p.link[0] : "",
         level: "green"
       }));
 
