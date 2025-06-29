@@ -55,10 +55,10 @@
 }
 
 .dss-apod-caption.scrolling {
-  animation: dss-scroll 20s linear infinite alternate;
+  animation: dss-scroll 40s linear infinite alternate;
 }
 
 @keyframes dss-scroll {
-  from { transform: translateY(0); }
-  to { transform: translateY(calc(-1 * var(--scroll-distance))); }
+  from { transform: translateY(calc(-1 * var(--scroll-distance))); }
+  to { transform: translateY(0); }
 }
