@@ -1,7 +1,10 @@
 import json
+import logging
 from psrqpy import QueryATNF
 
 def main():
+    logging.basicConfig(level=logging.INFO)
+    logging.info("[DSS py] querying pulsar database")
     query = QueryATNF(params=['JNAME', 'P0', 'DM', 'RAJ', 'DECJ'], condition='P0 < 0.01')
     results = query.table
 
@@ -16,7 +19,7 @@ def main():
             "position": f"{row['RAJ']} {row['DECJ']}"
         })
 
-    # Spara i rätt mapp för MagicMirror-modulen
+    logging.info("[DSS py] writing %d pulsars to file", len(pulsars))
     with open("modules/MMM-DeepSpaceSignals/pulsars.json", "w") as f:
         json.dump(pulsars, f)
 

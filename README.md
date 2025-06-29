@@ -11,9 +11,10 @@ cd ~/MagicMirror/modules
 git clone <repository-url> MMM-DeepSpaceSignals
 cd MMM-DeepSpaceSignals
 npm install
-pip install psrqpy
-pip install astropy
 ```
+
+The module uses a Node helper to fetch data server-side. Your configuration is
+sent to the helper when the module starts, and it handles periodic updates.
 
 ## Configuration
 Add the module to the `modules` array in `config.js`:
@@ -48,6 +49,10 @@ The helper polls a few public APIs:
 - **CHIME/FRB** – recent Fast Radio Burst detections
 - **LIGO/Virgo** – gravitational wave alerts
 - **ATNF Pulsar Database** – pulsar observations
+
+The repository also includes a small Python helper script used for querying the
+ATNF database directly. If you plan to run it, install `psrqpy` and `astropy`
+and execute `pulsar_fetcher.py` manually or from a cron job.
 
 The default URLs shown above are placeholders. Replace them with the real API
 endpoints for your setup in the `apiUrls` section of the module configuration.
