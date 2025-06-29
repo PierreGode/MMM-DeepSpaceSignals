@@ -27,23 +27,35 @@ The goal: to give real-time, visually rich insight into cosmic phenomena, update
 Example config:
 
 ```js
+config.js:
+
 {
   module: "MMM-DeepSpaceSignals",
   position: "top_right",
   config: {
-    updateInterval: 10 * 60 * 1000, // ms
+    updateInterval: 10 * 60 * 1000,
+    maxWidth: "340px",
     sources: {
       frb: true,
       gravitational: true,
-      pulsar: false
+      pulsar: false,
+      apod: true
     },
     apiUrls: {
       frb: "https://chime-frb-open-data.github.io/voevents/voevents.json",
       gravitational: "https://gwosc.org/eventapi/jsonfull/allevents/",
-      pulsar: "/home/pi/pulsars.json"
+      pulsar: "https://www.herta-experiment.org/frbstats/catalogue.json",
+      apod: "https://api.nasa.gov/planetary/apod?api_key=*****"
+    },
+    minStrength: {
+      frb: null,
+      gravitational: null,
+      pulsar: null,
+      apod: null
     }
   }
-}
+},
+
 ```
 
 **Supported data sources and their URLs:**
