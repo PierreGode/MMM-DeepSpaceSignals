@@ -27,6 +27,11 @@ Add the module to the `modules` array in `config.js`:
       gravitational: true,
       pulsar: false
     },
+    apiUrls: {
+      frb: "https://chimefrb-open-data-api.naic.edu/frb",
+      gravitational: "https://example.com/ligo/api",
+      pulsar: "https://pulsar.example.com/api"
+    },
     minStrength: {
       frb: null,
       gravitational: null,
@@ -42,8 +47,8 @@ The helper polls a few public APIs:
 - **LIGO/Virgo** – gravitational wave alerts
 - **ATNF Pulsar Database** – pulsar observations
 
-The URLs in the code are placeholders and should be replaced with real API
-endpoints before use.
+The default URLs shown above are placeholders. Replace them with the real API
+endpoints for your setup in the `apiUrls` section of the module configuration.
 
 ## License
 MIT
