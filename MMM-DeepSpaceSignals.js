@@ -7,7 +7,7 @@ Module.register("MMM-DeepSpaceSignals", {
       pulsar: false
     },
     apiUrls: {
-      frb: "https://chime-frb-open-data.github.io/voevents/voevents.json",
+      frb: "https://chime-frb-open-data.github.io/voevents.json",
       gravitational: "https://gwosc.org/api/v2/events",
       pulsar: "" // hanteras via Python
     },
