@@ -246,15 +246,15 @@ module.exports = NodeHelper.create({
         return [];
       }
 
-      const result = [{
-        type: "APOD",
-        time: data.date,
-        intensity: data.title || "",
-        url: data.url || data.hdurl || "",
-        level: "blue",
-        media_type: data.media_type,
-        description: data.explanation || ""
-      }];
+        const result = [{
+          type: "APOD",
+          time: data.date,
+          intensity: data.title || "",
+          url: data.url || data.hdurl || "",
+          level: "blue",
+          media_type: data.media_type,
+          explanation: data.explanation || ""
+        }];
 
       console.log('[DSS helper] APOD fetched', result.length);
       return result;

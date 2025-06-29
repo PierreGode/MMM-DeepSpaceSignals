@@ -41,9 +41,24 @@
   border-radius: 4px;
 }
 
+.dss-apod-caption-wrapper {
+  overflow: hidden;
+  position: relative;
+}
+
 .dss-apod-caption {
   margin-top: 6px;
   font-size: 12px;
   font-style: italic;
   color: #ccc;
+  white-space: pre-wrap;
+}
+
+.dss-apod-caption.scrolling {
+  animation: dss-scroll 20s linear infinite alternate;
+}
+
+@keyframes dss-scroll {
+  from { transform: translateY(0); }
+  to { transform: translateY(calc(-1 * var(--scroll-distance))); }
 }
