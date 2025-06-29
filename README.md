@@ -31,7 +31,7 @@ Add the module to the `modules` array in `config.js`:
       pulsar: false
     },
     apiUrls: {
-      frb: "https://raw.githubusercontent.com/chime-frb-open-data/voevents/main/voevents.json",
+      frb: "https://chime-frb-open-data.github.io/voevents/voevents.json",
       gravitational: "https://example.com/ligo/api",
       pulsar: "https://pulsar.example.com/api"
     },
