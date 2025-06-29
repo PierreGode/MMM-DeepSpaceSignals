@@ -1,5 +1,6 @@
 const NodeHelper = require("node_helper");
 const { parseStringPromise } = require("xml2js");
+const fetch = require("node-fetch");
 
 module.exports = NodeHelper.create({
   start() {
@@ -51,8 +52,17 @@ module.exports = NodeHelper.create({
       const res = await fetch(url);
       if (!res.ok) {
         console.error("[DSS helper] FRB fetch HTTP", res.status);
-        return [];
+
+        // Fallback-testdata
+        return [{
+          type: "FRB (offline)",
+          time: new Date().toISOString(),
+          intensity: "N/A",
+          url: "https://chime-frb-open-data.github.io/",
+          level: "grey"
+        }];
       }
+
       const text = await res.text();
       let data;
       try {
@@ -61,8 +71,10 @@ module.exports = NodeHelper.create({
         console.error("[DSS helper] FRB response not JSON", err);
         return [];
       }
+
       const items = data.events || data.voevents || data || [];
       const arr = Array.isArray(items) ? items : Object.values(items);
+
       const result = arr.slice(0, 5).map(item => ({
         type: "FRB",
         time: item.time || item.date || item.detected || item.datetime || "",
@@ -70,8 +82,10 @@ module.exports = NodeHelper.create({
         url: item.url || item.voevent || item.link || "",
         level: "red"
       }));
+
       console.log('[DSS helper] FRB events fetched', result.length);
       return result;
+
     } catch (e) {
       console.error("FRB fetch error", e);
       return [];
@@ -86,6 +100,7 @@ module.exports = NodeHelper.create({
         console.error("[DSS helper] Gravitational fetch HTTP", res.status);
         return [];
       }
+
       const text = await res.text();
       let data;
       try {
@@ -94,6 +109,7 @@ module.exports = NodeHelper.create({
         console.error("[DSS helper] Gravitational response not JSON", err);
         return [];
       }
+
       const result = Object.values(data.events || {}).map(ev => ({
         type: "GW",
         time: ev.time,
@@ -101,8 +117,10 @@ module.exports = NodeHelper.create({
         url: ev.url,
         level: ev.significance > 0.9 ? "red" : "yellow"
       }));
+
       console.log('[DSS helper] GW events fetched', result.length);
       return result;
+
     } catch (e) {
       console.error("Gravitational fetch error", e);
       return [];
@@ -117,6 +135,7 @@ module.exports = NodeHelper.create({
         console.error("[DSS helper] Pulsar fetch HTTP", res.status);
         return [];
       }
+
       const text = await res.text();
       let json;
       try {
@@ -125,6 +144,7 @@ module.exports = NodeHelper.create({
         console.error("[DSS helper] Pulsar response not XML", err);
         return [];
       }
+
       const records = json.records || [];
       const result = records.map(p => ({
         type: "Pulsar",
@@ -133,8 +153,10 @@ module.exports = NodeHelper.create({
         url: p.link[0],
         level: "green"
       }));
+
       console.log('[DSS helper] Pulsar records fetched', result.length);
       return result;
+
     } catch (e) {
       console.error("Pulsar fetch error", e);
       return [];
