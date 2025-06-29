@@ -41,6 +41,10 @@ module.exports = NodeHelper.create({
       const pulsars = await this.fetchPulsar();
       results = results.concat(pulsars);
     }
+    if (this.config.sources.apod) {
+      const apod = await this.fetchAPOD();
+      results = results.concat(apod);
+    }
     this.events = results;
     console.log('[DSS helper] Sending', results.length, 'events to module');
     this.sendSocketNotification("DATA", results);
@@ -159,6 +163,45 @@ module.exports = NodeHelper.create({
 
     } catch (e) {
       console.error("Pulsar fetch error", e);
+      return [];
+    }
+  },
+
+  async fetchAPOD() {
+    try {
+      const url = this.config.apiUrls?.apod || "";
+      const res = await fetch(url);
+      if (!res.ok) {
+        console.error("[DSS helper] APOD fetch HTTP", res.status);
+        return [];
+      }
+
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        console.error("[DSS helper] APOD response not JSON", err);
+        return [];
+      }
+
+      if (!data.date) {
+        return [];
+      }
+
+      const result = [{
+        type: "APOD",
+        time: data.date,
+        intensity: data.title || "",
+        url: data.url || data.hdurl || "",
+        level: "blue"
+      }];
+
+      console.log('[DSS helper] APOD fetched', result.length);
+      return result;
+
+    } catch (e) {
+      console.error("APOD fetch error", e);
       return [];
     }
   }
