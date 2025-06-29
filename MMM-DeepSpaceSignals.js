@@ -109,10 +109,25 @@ Module.register("MMM-DeepSpaceSignals", {
       apodContainer.appendChild(img);
 
       if (this.apod.explanation) {
+        const captionWrapper = document.createElement("div");
+        captionWrapper.className = "dss-apod-caption-wrapper";
+
         const caption = document.createElement("div");
         caption.className = "dss-apod-caption";
         caption.innerText = this.apod.explanation;
-        apodContainer.appendChild(caption);
+        captionWrapper.appendChild(caption);
+        apodContainer.appendChild(captionWrapper);
+
+        window.setTimeout(() => {
+          const lineHeight = parseFloat(window.getComputedStyle(caption).lineHeight) || 16;
+          const maxHeight = lineHeight * 10;
+          captionWrapper.style.maxHeight = maxHeight + "px";
+          if (caption.scrollHeight > maxHeight) {
+            const scrollAmount = caption.scrollHeight - maxHeight;
+            caption.style.setProperty("--scroll-distance", scrollAmount + "px");
+            caption.classList.add("scrolling");
+          }
+        }, 100);
       }
 
       wrapper.appendChild(apodContainer);
