@@ -1,23 +1,50 @@
-# MMM-DeepSpaceSignals
+# 🛰️ MMM-DeepSpaceSignals
 
-A MagicMirror² module that polls various astronomy data sources for new and unusual
-signals. It can show recent Fast Radio Bursts, gravitational wave alerts and
-pulsar observations. It can also display the latest NASA Astronomy Picture of
-the Day (APOD).
+A MagicMirror² module that polls various astronomy data sources for new and unusual signals.  
+It can show recent **Fast Radio Bursts**, **gravitational wave alerts**, and **pulsar observations**.  
+It can also display the latest **NASA Astronomy Picture of the Day (APOD)**.
 
-## Installation
+---
+
+## 🛠️ Installation
 
 ```bash
 cd ~/MagicMirror/modules
-git clone <repository-url> MMM-DeepSpaceSignals
+git clone https://github.com/PierreGode/MMM-DeepSpaceSignals
 cd MMM-DeepSpaceSignals
 npm install
 ```
 
-The module uses a Node helper to fetch data server-side. Your configuration is
-sent to the helper when the module starts, and it handles periodic updates.
+The module uses a Node helper to fetch data server-side. Your configuration is sent to the helper when the module starts, and it handles periodic updates.
 
-## Configuration
+---
+
+## 🔄 Update
+
+```bash
+cd ~/MagicMirror/modules/MMM-DeepSpaceSignals
+git pull
+npm install
+```
+
+---
+
+## 🐍 Optional: Python Pulsar Support (ATNF Fetcher)
+
+If you want to use the included Python script `pulsar_fetcher.py` to fetch pulsar data from the ATNF catalog, install the required Python packages.
+
+**On Raspberry Pi:**
+
+```bash
+pip install psrqpy astropy --break-system-packages
+```
+
+This will generate a `pulsars.json` file that the module can use.
+
+---
+
+## ⚙️ Configuration
+
 Add the module to the `modules` array in `config.js`:
 
 ```javascript
@@ -46,33 +73,62 @@ Add the module to the `modules` array in `config.js`:
       apod: null
     }
   }
-},
-
+}
 ```
 
-`intensity` values depend on the data source: FRB events use fluence (Jy ms),
-gravitational waves show significance, and pulsars may report signal-to-noise
-ratio.
+`intensity` values depend on the data source:  
+- FRB events use **fluence (Jy·ms)**  
+- Gravitational waves show **significance**  
+- Pulsars may report **signal-to-noise ratio (SNR)**
 
-## Data Sources
-The helper polls a few public APIs:
-- **CHIME/FRB** – recent Fast Radio Burst detections
-- **LIGO/Virgo** – gravitational wave alerts
-- **ATNF Pulsar Database** – pulsar observations
-- **NASA APOD** – daily astronomy image and description. When enabled, the module displays the APOD image and its explanation directly in the table if the media type is an image. The image is constrained to a maximum width of 200&nbsp;px so it remains small within the module.
+---
 
-The repository also includes a small Python helper script used for querying the
-ATNF database directly. If you plan to run it, install `psrqpy` and `astropy`
-and execute `pulsar_fetcher.py` manually or from a cron job.
+## 🧠 Signal Types Explained
 
-The default URLs shown above are examples. The FRB URL points to the CHIME/FRB
-open data JSON file, while the others should be replaced with the appropriate
-endpoints for your setup in the `apiUrls` section of the module configuration.
-For the NASA APOD API you can use the `DEMO_KEY` or register your own API key at
-<https://api.nasa.gov/>.
+This module detects and displays multiple types of deep space signals. Here's what each one means:
 
-If the FRB endpoint is unreachable (404 or similar), the helper loads a small
-sample dataset from `data/frb_sample.json` included in this repository.
+### 💥 FRB – Fast Radio Burst
+Fast Radio Bursts are extremely brief but powerful pulses of radio waves from deep space.  
+- Duration: milliseconds  
+- Possible sources: magnetars, neutron stars, or unknown phenomena  
+- Measured in **fluence** (Jy·ms)  
+- Often mysterious and still under research
 
-## License
-MIT
+### 🌊 GE – Gravitational Events (Gravitational Waves)
+Gravitational waves are ripples in the fabric of spacetime, typically caused by:  
+- Colliding black holes  
+- Merging neutron stars  
+- Detected by observatories like **LIGO** and **Virgo**  
+- Strength is indicated by a **significance score** or **FAP** (False Alarm Probability)
+
+### 🌟 Pulsar
+Pulsars are fast-rotating neutron stars that emit beams of electromagnetic radiation.  
+- Often observed as regular pulses (like a cosmic lighthouse)  
+- Identified by **SNR** (Signal-to-Noise Ratio), rotation speed, or pulse period  
+- Useful for studying extreme physics like gravity and magnetism
+
+---
+
+## 🌐 Data Sources
+
+The helper polls the following public APIs:
+
+| Source          | Description                         | API Key Required |
+|-----------------|-------------------------------------|------------------|
+| **CHIME/FRB**   | Recent Fast Radio Burst detections  | ❌ No            |
+| **LIGO/Virgo**  | Gravitational wave alerts           | ❌ No            |
+| **ATNF Pulsars**| Pulsar observations (JSON or script)| ❌ / Optional    |
+| **NASA APOD**   | Daily astronomy image + caption     | ✅ Yes (free)    |
+
+> When enabled, the module displays the APOD image and its explanation directly in the table if the media type is an image. The image is constrained to a maximum width of 200 px to fit nicely inside the module.
+
+If the FRB endpoint is unreachable (e.g., 404 error), the module loads a local fallback file:  
+`data/frb_sample.json`.
+
+To get your own NASA API key, visit: [https://api.nasa.gov/](https://api.nasa.gov/)
+
+---
+
+## 📃 License
+
+MIT © [Pierre Gode](https://github.com/PierreGode)
