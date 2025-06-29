@@ -42,7 +42,7 @@ module.exports = NodeHelper.create({
 
   async fetchFRB() {
     try {
-      const url = "https://chimefrb-open-data-api.naic.edu/frb"; // placeholder
+      const url = this.config.apiUrls?.frb || "";
       const res = await fetch(url);
       const data = await res.json();
       return data.slice(0, 5).map(item => ({
@@ -60,7 +60,7 @@ module.exports = NodeHelper.create({
 
   async fetchGravitational() {
     try {
-      const url = "https://example.com/ligo/api"; // placeholder
+      const url = this.config.apiUrls?.gravitational || "";
       const res = await fetch(url);
       const data = await res.json();
       return data.events.map(ev => ({
@@ -78,7 +78,7 @@ module.exports = NodeHelper.create({
 
   async fetchPulsar() {
     try {
-      const url = "https://pulsar.example.com/api"; // placeholder
+      const url = this.config.apiUrls?.pulsar || "";
       const res = await fetch(url);
       const text = await res.text();
       const json = await parseStringPromise(text);

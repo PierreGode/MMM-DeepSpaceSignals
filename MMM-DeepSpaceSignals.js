@@ -6,6 +6,11 @@ Module.register("MMM-DeepSpaceSignals", {
       gravitational: true,
       pulsar: false
     },
+    apiUrls: {
+      frb: "https://chimefrb-open-data-api.naic.edu/frb",
+      gravitational: "https://example.com/ligo/api",
+      pulsar: "https://pulsar.example.com/api"
+    },
     minStrength: {
       frb: null,
       gravitational: null,
