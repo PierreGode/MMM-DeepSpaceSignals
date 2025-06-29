@@ -4,17 +4,20 @@ Module.register("MMM-DeepSpaceSignals", {
     sources: {
       frb: true,
       gravitational: true,
-      pulsar: false
+      pulsar: false,
+      apod: false
     },
     apiUrls: {
       frb: "https://chime-frb-open-data.github.io/voevents.json",
       gravitational: "https://gwosc.org/api/v2/events",
-      pulsar: "" // hanteras via Python
+      pulsar: "", // hanteras via Python
+      apod: "https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY"
     },
     minStrength: {
       frb: null,
       gravitational: null,
-      pulsar: null
+      pulsar: null,
+      apod: null
     }
   },
 
