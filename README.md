@@ -122,7 +122,7 @@ The helper polls the following public APIs:
 | **ATNF Pulsars**| Pulsar observations (JSON or script)| ❌ / Optional    |
 | **NASA APOD**   | Daily astronomy image + caption     | ✅ Yes (free)    |
 
-> When enabled, the module displays the APOD image and its explanation directly in the table if the media type is an image. The image is constrained to a maximum width of 200 px to fit nicely inside the module. If the caption is longer than 10 lines it appears in a scrollable box that slowly moves every 20&nbsp;seconds.
+> When enabled, the module displays the APOD image and its explanation directly in the table if the media type is an image. The image is constrained to a maximum width of 200 px to fit nicely inside the module. If the caption is longer than 10 lines it appears in a scrollable box that slowly moves every 40&nbsp;seconds.
 
 If the primary FRB endpoint is unreachable (e.g., 404 error), the module
 tries the `frbBackup` URL. If that also fails, it loads the local file
