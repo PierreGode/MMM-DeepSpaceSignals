@@ -127,9 +127,9 @@ module.exports = NodeHelper.create({
 
       const result = eventsArray.map(ev => ({
         type: "GW",
-        time: ev.time || ev.event_time || "",
-        intensity: ev.significance || ev.false_alarm_rate || 0,
-        url: ev.url || ev.link || "",
+        time: ev.time || ev.event_time || ev.event_date || ev.start_time || "No time",
+        intensity: ev.significance || ev.false_alarm_rate || ev.snr || "No intensity",
+        url: ev.url || ev.link || "#",
         level: (ev.significance && ev.significance > 0.9) ? "red" : "yellow"
       }));
 
