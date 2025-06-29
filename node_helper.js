@@ -28,6 +28,16 @@ module.exports = NodeHelper.create({
     }, this.config.updateInterval || 600000);
   },
 
+  filterEvents(events) {
+    return events.filter(ev => {
+      if (!ev || !ev.type) return false;
+      if (!ev.time || ev.time === 'No time') return false;
+      if (!ev.intensity || ev.intensity === 'No intensity') return false;
+      if (ev.level === 'grey') return false;
+      return true;
+    });
+  },
+
   async fetchAll() {
     console.log('[DSS helper] Fetching all sources');
     let results = [];
@@ -47,12 +57,13 @@ module.exports = NodeHelper.create({
       const apod = await this.fetchAPOD();
       results = results.concat(apod);
     }
-    this.events = results;
-    console.log('[DSS helper] Sending', results.length, 'events to module');
-    if (results.length) {
-      console.log('[DSS helper] Sample events to module:', JSON.stringify(results.slice(0, 3), null, 2));
+    const filtered = this.filterEvents(results);
+    this.events = filtered;
+    console.log('[DSS helper] Sending', filtered.length, 'events to module');
+    if (filtered.length) {
+      console.log('[DSS helper] Sample events to module:', JSON.stringify(filtered.slice(0, 3), null, 2));
     }
-    this.sendSocketNotification("DATA", results);
+    this.sendSocketNotification("DATA", filtered);
   },
 
   async fetchFRB() {
