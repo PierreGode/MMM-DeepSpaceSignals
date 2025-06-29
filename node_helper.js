@@ -63,7 +63,7 @@ module.exports = NodeHelper.create({
       const url = this.config.apiUrls?.gravitational || "";
       const res = await fetch(url);
       const data = await res.json();
-      return data.events.map(ev => ({
+      return Object.values(data.events || {}).map(ev => ({
         type: "GW",
         time: ev.time,
         intensity: ev.significance,
