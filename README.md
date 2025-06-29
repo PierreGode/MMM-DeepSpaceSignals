@@ -31,7 +31,7 @@ Add the module to the `modules` array in `config.js`:
       pulsar: false
     },
     apiUrls: {
-      frb: "https://chimefrb-open-data-api.naic.edu/frb",
+      frb: "https://raw.githubusercontent.com/chime-frb-open-data/voevents/main/voevents.json",
       gravitational: "https://example.com/ligo/api",
       pulsar: "https://pulsar.example.com/api"
     },
@@ -54,7 +54,8 @@ The repository also includes a small Python helper script used for querying the
 ATNF database directly. If you plan to run it, install `psrqpy` and `astropy`
 and execute `pulsar_fetcher.py` manually or from a cron job.
 
-The default URLs shown above are placeholders. Replace them with the real API
+The default URLs shown above are examples. The FRB URL points to the CHIME/FRB
+open data JSON file, while the others should be replaced with the appropriate
 endpoints for your setup in the `apiUrls` section of the module configuration.
 
 ## License

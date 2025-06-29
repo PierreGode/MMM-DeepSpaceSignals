@@ -61,12 +61,13 @@ module.exports = NodeHelper.create({
         console.error("[DSS helper] FRB response not JSON", err);
         return [];
       }
-      const items = data.events || data || [];
-      const result = items.slice(0, 5).map(item => ({
+      const items = data.events || data.voevents || data || [];
+      const arr = Array.isArray(items) ? items : Object.values(items);
+      const result = arr.slice(0, 5).map(item => ({
         type: "FRB",
-        time: item.date || item.detected || "",
-        intensity: item.fluence || item.signal || "",
-        url: item.url || "",
+        time: item.time || item.date || item.detected || item.datetime || "",
+        intensity: item.fluence || item.signal || item.snr || "",
+        url: item.url || item.voevent || item.link || "",
         level: "red"
       }));
       console.log('[DSS helper] FRB events fetched', result.length);
