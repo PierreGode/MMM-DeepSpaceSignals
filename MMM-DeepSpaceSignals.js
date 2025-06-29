@@ -1,6 +1,7 @@
+// MMM-DeepSpaceSignals.js
 Module.register("MMM-DeepSpaceSignals", {
   defaults: {
-    updateInterval: 10 * 60 * 1000, // 10 minuter
+    updateInterval: 10 * 60 * 1000,
     maxWidth: "340px",
     sources: {
       frb: true,
@@ -8,103 +9,108 @@ Module.register("MMM-DeepSpaceSignals", {
       pulsar: false,
       apod: true
     },
-    apiUrls: {
-      frb: "https://chime-frb-open-data.github.io/voevents/voevents.json",
-      gravitational: "https://gwosc.org/eventapi/jsonfull/allevents/",
-      pulsar: "https://www.herta-experiment.org/frbstats/catalogue.json",
-      apod: "https://api.nasa.gov/planetary/apod?api_key=DIN_NASA_API_NYCKEL"
-    },
-    minStrength: {
-      frb: null,
-      gravitational: null,
-      pulsar: null,
-      apod: null
-    }
+    apiUrls: {},
+    minStrength: {}
   },
 
-  start: function () {
-    Log.log("[DSS] Starting module with config", this.config);
+  start() {
+    this.dataLoaded = false;
     this.events = [];
-    this.width = this.config.maxWidth;
+    this.apod = null;
     this.sendSocketNotification("CONFIG", this.config);
   },
 
-  socketNotificationReceived: function (notification, payload) {
+  getStyles() {
+    return ["MMM-DeepSpaceSignals.css"];
+  },
+
+  socketNotificationReceived(notification, payload) {
     if (notification === "DATA") {
-      Log.log("[DSS] Received data from helper with", payload.length, "events");
-      this.events = payload;
+      this.events = payload.events || [];
+      this.apod = payload.apod || null;
+      this.dataLoaded = true;
       this.updateDom();
     }
   },
 
-  getStyles: function () {
-    return ["MMM-DeepSpaceSignals.css"];
-  },
-
-  getDom: function () {
-    Log.log("[DSS] Building DOM with", this.events.length, "events");
+  getDom() {
     const wrapper = document.createElement("div");
-    if (this.width) {
-      wrapper.style.maxWidth = this.width;
-    }
-    if (!this.events.length) {
-      wrapper.innerHTML = "No data";
+    wrapper.className = "dss-wrapper";
+
+    if (!this.dataLoaded) {
+      wrapper.innerText = "Loading space signals...";
       return wrapper;
     }
 
     const table = document.createElement("table");
     table.className = "dss-table";
 
-    const header = document.createElement("tr");
-    header.innerHTML = `<th>Type</th><th>Time</th><th>Intensity</th><th>Link</th>`;
-    table.appendChild(header);
+    const thead = document.createElement("thead");
+    const headerRow = document.createElement("tr");
 
-    this.events.forEach(ev => {
-      console.log("[DSS] Rendering event:", ev);
-
-      if (ev.type === "APOD" && ev.media_type === "image") {
-        const imgRow = document.createElement("tr");
-        const imgCell = document.createElement("td");
-        imgCell.colSpan = 4;
-        const img = document.createElement("img");
-        img.src = ev.url;
-        img.className = "dss-apod-image";
-        imgCell.appendChild(img);
-        imgRow.appendChild(imgCell);
-        table.appendChild(imgRow);
-
-        if (ev.description) {
-          const descRow = document.createElement("tr");
-          const descTd = document.createElement("td");
-          descTd.colSpan = 4;
-          descTd.className = "dss-apod-desc";
-          descTd.innerHTML = ev.description;
-          descRow.appendChild(descTd);
-          table.appendChild(descRow);
-        }
-      }
-
-      const row = document.createElement("tr");
-      row.className = "dss-row " + (ev.level || "");
-
-      const link = ev.url ? `<a href="${ev.url}" target="_blank">link</a>` : "";
-
-      row.innerHTML = `
-        <td class="dss-type">${ev.type || "No type"}</td>
-        <td class="dss-time">${ev.time || "No time"}</td>
-        <td class="dss-intensity">${ev.intensity || "No intensity"}</td>
-        <td class="dss-link">${link}</td>
-      `;
-
-      table.appendChild(row);
+    ["Type", "Time", "Intensity", "Link"].forEach(text => {
+      const th = document.createElement("th");
+      th.innerText = text;
+      headerRow.appendChild(th);
     });
 
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    const tbody = document.createElement("tbody");
+
+    this.events.forEach(event => {
+      const row = document.createElement("tr");
+      row.className = `dss-row ${event.level || ""}`;
+
+      const typeCell = document.createElement("td");
+      typeCell.innerText = event.type || "";
+      row.appendChild(typeCell);
+
+      const timeCell = document.createElement("td");
+      timeCell.innerText = event.time || "";
+      row.appendChild(timeCell);
+
+      const strengthCell = document.createElement("td");
+      strengthCell.innerText = event.intensity !== null ? event.intensity : "";
+      row.appendChild(strengthCell);
+
+      const linkCell = document.createElement("td");
+      if (event.url) {
+        const a = document.createElement("a");
+        a.href = event.url;
+        a.innerText = "🔗";
+        a.target = "_blank";
+        linkCell.appendChild(a);
+      }
+      row.appendChild(linkCell);
+
+      tbody.appendChild(row);
+    });
+
+    table.appendChild(tbody);
     wrapper.appendChild(table);
 
-    const note = document.createElement("div");
-    note.className = "dss-note";
-    note.innerHTML = "Intensity values are source dependent (e.g. FRB fluence in Jy ms, GW significance).";
-    wrapper.appendChild(note);
+    // Show APOD image if available
+    if (this.apod && this.apod.media_type === "image") {
+      const apodContainer = document.createElement("div");
+      apodContainer.className = "dss-apod";
+
+      const img = document.createElement("img");
+      img.src = this.apod.url;
+      img.alt = this.apod.title || "APOD";
+      img.style.maxWidth = "200px";
+      apodContainer.appendChild(img);
+
+      if (this.apod.explanation) {
+        const caption = document.createElement("div");
+        caption.className = "dss-apod-caption";
+        caption.innerText = this.apod.explanation;
+        apodContainer.appendChild(caption);
+      }
+
+      wrapper.appendChild(apodContainer);
+    }
 
     return wrapper;
   }
