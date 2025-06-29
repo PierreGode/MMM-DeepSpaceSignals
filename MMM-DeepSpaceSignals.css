@@ -1,11 +1,22 @@
+/* MMM-DeepSpaceSignals.css */
+.dss-wrapper {
+  max-width: 340px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
 .dss-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  margin-top: 10px;
+  table-layout: fixed;
+  word-wrap: break-word;
 }
 
-.dss-row td {
+.dss-table th,
+.dss-table td {
   padding: 4px 6px;
+  text-align: left;
 }
 
 .dss-row.red {
@@ -20,46 +31,19 @@
   background-color: rgba(0, 255, 0, 0.2);
 }
 
-.dss-row.grey {
-  color: #999;
-  font-style: italic;
-  background-color: rgba(200, 200, 200, 0.1);
+.dss-apod {
+  margin-top: 12px;
+  text-align: center;
 }
 
-.dss-type {
-  min-width: 100px;
-}
-
-.dss-time,
-.dss-intensity {
-  padding-left: 12px;
-}
-
-.dss-empty {
-  color: #aaa;
-  font-style: italic;
-  padding: 12px;
-  display: block;
-}
-
-.dss-link a {
-  color: inherit;
-  text-decoration: underline;
-}
-.dss-apod-image {
+.dss-apod img {
   max-width: 200px;
-  height: auto;
-  display: block;
-  margin: 4px 0;
+  border-radius: 4px;
 }
 
-.dss-apod-desc {
-  padding: 4px 6px;
-  font-style: italic;
-}
-
-.dss-note {
+.dss-apod-caption {
+  margin-top: 6px;
   font-size: 12px;
-  color: #888;
-  margin-top: 4px;
+  font-style: italic;
+  color: #ccc;
 }
