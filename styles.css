@@ -8,9 +8,39 @@
   padding: 4px 6px;
 }
 
-.dss-row.red { background-color: rgba(255,0,0,0.2); }
-.dss-row.yellow { background-color: rgba(255,255,0,0.2); }
-.dss-row.green { background-color: rgba(0,255,0,0.2); }
+.dss-row.red {
+  background-color: rgba(255, 0, 0, 0.2);
+}
+
+.dss-row.yellow {
+  background-color: rgba(255, 255, 0, 0.2);
+}
+
+.dss-row.green {
+  background-color: rgba(0, 255, 0, 0.2);
+}
+
+.dss-row.grey {
+  color: #999;
+  font-style: italic;
+  background-color: rgba(200, 200, 200, 0.1);
+}
+
+.dss-type {
+  min-width: 100px;
+}
+
+.dss-time,
+.dss-intensity {
+  padding-left: 12px;
+}
+
+.dss-empty {
+  color: #aaa;
+  font-style: italic;
+  padding: 12px;
+  display: block;
+}
 
 .dss-link a {
   color: inherit;
