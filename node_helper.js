@@ -81,7 +81,18 @@ module.exports = NodeHelper.create({
     try {
       const url = this.config.apiUrls?.gravitational || "";
       const res = await fetch(url);
-      const data = await res.json();
+      if (!res.ok) {
+        console.error("[DSS helper] Gravitational fetch HTTP", res.status);
+        return [];
+      }
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        console.error("[DSS helper] Gravitational response not JSON", err);
+        return [];
+      }
       const result = Object.values(data.events || {}).map(ev => ({
         type: "GW",
         time: ev.time,
@@ -101,8 +112,18 @@ module.exports = NodeHelper.create({
     try {
       const url = this.config.apiUrls?.pulsar || "";
       const res = await fetch(url);
+      if (!res.ok) {
+        console.error("[DSS helper] Pulsar fetch HTTP", res.status);
+        return [];
+      }
       const text = await res.text();
-      const json = await parseStringPromise(text);
+      let json;
+      try {
+        json = await parseStringPromise(text);
+      } catch (err) {
+        console.error("[DSS helper] Pulsar response not XML", err);
+        return [];
+      }
       const records = json.records || [];
       const result = records.map(p => ({
         type: "Pulsar",
