@@ -49,7 +49,18 @@ module.exports = NodeHelper.create({
     try {
       const url = this.config.apiUrls?.frb || "";
       const res = await fetch(url);
-      const data = await res.json();
+      if (!res.ok) {
+        console.error("[DSS helper] FRB fetch HTTP", res.status);
+        return [];
+      }
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        console.error("[DSS helper] FRB response not JSON", err);
+        return [];
+      }
       const items = data.events || data || [];
       const result = items.slice(0, 5).map(item => ({
         type: "FRB",
