@@ -1,0 +1,14 @@
+{
+  "events": [
+    {
+      "time": "2025-06-29T12:34:56Z",
+      "fluence": 2.1,
+      "url": "https://example.com/frb1"
+    },
+    {
+      "time": "2025-06-29T13:14:00Z",
+      "fluence": 3.5,
+      "url": "https://example.com/frb2"
+    }
+  ]
+}

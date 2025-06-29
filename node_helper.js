@@ -1,6 +1,8 @@
 const NodeHelper = require("node_helper");
 const { parseStringPromise } = require("xml2js");
 const fetch = require("node-fetch");
+const fs = require("fs");
+const path = require("path");
 
 module.exports = NodeHelper.create({
   start() {
@@ -60,13 +62,7 @@ module.exports = NodeHelper.create({
       const res = await fetch(url);
       if (!res.ok) {
         console.error("[DSS helper] FRB fetch HTTP error", res.status);
-        return [{
-          type: "FRB (offline)",
-          time: new Date().toISOString(),
-          intensity: "N/A",
-          url: "https://chime-frb-open-data.github.io/",
-          level: "grey"
-        }];
+        return this.loadLocalFRBSample();
       }
 
       const text = await res.text();
@@ -98,7 +94,7 @@ module.exports = NodeHelper.create({
 
     } catch (e) {
       console.error("[DSS helper] FRB fetch error", e);
-      return [];
+      return this.loadLocalFRBSample();
     }
   },
 
@@ -235,6 +231,31 @@ module.exports = NodeHelper.create({
     } catch (e) {
       console.error("[DSS helper] APOD fetch error", e);
       return [];
+    }
+  },
+
+  loadLocalFRBSample() {
+    try {
+      const file = path.join(__dirname, 'data', 'frb_sample.json');
+      const raw = fs.readFileSync(file, 'utf8');
+      const json = JSON.parse(raw);
+      const arr = Array.isArray(json) ? json : (json.events || []);
+      return arr.map(item => ({
+        type: 'FRB',
+        time: item.time || item.date || '',
+        intensity: item.fluence || item.signal || '',
+        url: item.url || '',
+        level: 'grey'
+      }));
+    } catch (err) {
+      console.error('[DSS helper] Failed to load local FRB sample', err);
+      return [{
+        type: 'FRB (offline)',
+        time: new Date().toISOString(),
+        intensity: 'N/A',
+        url: 'https://chime-frb-open-data.github.io/',
+        level: 'grey'
+      }];
     }
   }
 });

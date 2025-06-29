@@ -1,6 +1,7 @@
 Module.register("MMM-DeepSpaceSignals", {
   defaults: {
     updateInterval: 10 * 60 * 1000, // 10 minuter
+    maxWidth: "340px",
     sources: {
       frb: true,
       gravitational: true,
@@ -24,6 +25,7 @@ Module.register("MMM-DeepSpaceSignals", {
   start: function () {
     Log.log("[DSS] Starting module with config", this.config);
     this.events = [];
+    this.width = this.config.maxWidth;
     this.sendSocketNotification("CONFIG", this.config);
   },
 
@@ -42,6 +44,9 @@ Module.register("MMM-DeepSpaceSignals", {
   getDom: function () {
     Log.log("[DSS] Building DOM with", this.events.length, "events");
     const wrapper = document.createElement("div");
+    if (this.width) {
+      wrapper.style.maxWidth = this.width;
+    }
     if (!this.events.length) {
       wrapper.innerHTML = "No data";
       return wrapper;
@@ -49,6 +54,10 @@ Module.register("MMM-DeepSpaceSignals", {
 
     const table = document.createElement("table");
     table.className = "dss-table";
+
+    const header = document.createElement("tr");
+    header.innerHTML = `<th>Type</th><th>Time</th><th>Intensity</th><th>Link</th>`;
+    table.appendChild(header);
 
     this.events.forEach(ev => {
       console.log("[DSS] Rendering event:", ev);
@@ -91,6 +100,12 @@ Module.register("MMM-DeepSpaceSignals", {
     });
 
     wrapper.appendChild(table);
+
+    const note = document.createElement("div");
+    note.className = "dss-note";
+    note.innerHTML = "Intensity values are source dependent (e.g. FRB fluence in Jy ms, GW significance).";
+    wrapper.appendChild(note);
+
     return wrapper;
   }
 });
