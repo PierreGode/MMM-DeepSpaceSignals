@@ -46,3 +46,14 @@
   color: inherit;
   text-decoration: underline;
 }
+.dss-apod-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 4px 0;
+}
+
+.dss-apod-desc {
+  padding: 4px 6px;
+  font-style: italic;
+}

@@ -52,14 +52,39 @@ Module.register("MMM-DeepSpaceSignals", {
 
     this.events.forEach(ev => {
       console.log("[DSS] Rendering event:", ev);
+
+      if (ev.type === "APOD" && ev.media_type === "image") {
+        const imgRow = document.createElement("tr");
+        const imgCell = document.createElement("td");
+        imgCell.colSpan = 4;
+        const img = document.createElement("img");
+        img.src = ev.url;
+        img.className = "dss-apod-image";
+        imgCell.appendChild(img);
+        imgRow.appendChild(imgCell);
+        table.appendChild(imgRow);
+
+        if (ev.description) {
+          const descRow = document.createElement("tr");
+          const descTd = document.createElement("td");
+          descTd.colSpan = 4;
+          descTd.className = "dss-apod-desc";
+          descTd.innerHTML = ev.description;
+          descRow.appendChild(descTd);
+          table.appendChild(descRow);
+        }
+      }
+
       const row = document.createElement("tr");
       row.className = "dss-row " + (ev.level || "");
+
+      const link = ev.url ? `<a href="${ev.url}" target="_blank">link</a>` : "";
 
       row.innerHTML = `
         <td class="dss-type">${ev.type || "No type"}</td>
         <td class="dss-time">${ev.time || "No time"}</td>
         <td class="dss-intensity">${ev.intensity || "No intensity"}</td>
-        <td class="dss-link"><a href="${ev.url || "#"}" target="_blank">link</a></td>
+        <td class="dss-link">${link}</td>
       `;
 
       table.appendChild(row);
