@@ -53,11 +53,10 @@ module.exports = NodeHelper.create({
   async fetchFRB() {
     try {
       const url = this.config.apiUrls?.frb || "";
+      console.log("[DSS helper] Fetching FRB from", url);
       const res = await fetch(url);
       if (!res.ok) {
-        console.error("[DSS helper] FRB fetch HTTP", res.status);
-
-        // Fallback-testdata
+        console.error("[DSS helper] FRB fetch HTTP error", res.status);
         return [{
           type: "FRB (offline)",
           time: new Date().toISOString(),
@@ -68,15 +67,19 @@ module.exports = NodeHelper.create({
       }
 
       const text = await res.text();
+      console.log("[DSS helper] FRB raw data length:", text.length);
+
       let data;
       try {
         data = JSON.parse(text);
       } catch (err) {
-        console.error("[DSS helper] FRB response not JSON", err);
+        console.error("[DSS helper] FRB JSON parse error", err);
         return [];
       }
 
       const items = data.events || data.voevents || data || [];
+      console.log("[DSS helper] FRB parsed items count:", Array.isArray(items) ? items.length : Object.keys(items).length);
+
       const arr = Array.isArray(items) ? items : Object.values(items);
 
       const result = arr.slice(0, 5).map(item => ({
@@ -91,7 +94,7 @@ module.exports = NodeHelper.create({
       return result;
 
     } catch (e) {
-      console.error("FRB fetch error", e);
+      console.error("[DSS helper] FRB fetch error", e);
       return [];
     }
   },
@@ -99,24 +102,28 @@ module.exports = NodeHelper.create({
   async fetchGravitational() {
     try {
       const url = this.config.apiUrls?.gravitational || "";
+      console.log("[DSS helper] Fetching GW from", url);
       const res = await fetch(url);
       if (!res.ok) {
-        console.error("[DSS helper] Gravitational fetch HTTP", res.status);
+        console.error("[DSS helper] Gravitational fetch HTTP error", res.status);
         return [];
       }
 
       const text = await res.text();
+      console.log("[DSS helper] GW raw data length:", text.length);
+
       let data;
       try {
         data = JSON.parse(text);
       } catch (err) {
-        console.error("[DSS helper] Gravitational response not JSON", err);
+        console.error("[DSS helper] GW JSON parse error", err);
         return [];
       }
 
-      // data.events is expected to be an object; convert to array
       const eventsObj = data.events || {};
       const eventsArray = Array.isArray(eventsObj) ? eventsObj : Object.values(eventsObj);
+
+      console.log("[DSS helper] GW parsed events count:", eventsArray.length);
 
       const result = eventsArray.map(ev => ({
         type: "GW",
@@ -130,7 +137,7 @@ module.exports = NodeHelper.create({
       return result;
 
     } catch (e) {
-      console.error("Gravitational fetch error", e);
+      console.error("[DSS helper] GW fetch error", e);
       return [];
     }
   },
@@ -139,26 +146,30 @@ module.exports = NodeHelper.create({
     try {
       const url = this.config.apiUrls?.pulsar || "";
       if (!url) {
-        // No URL configured for pulsar; return empty array
+        console.log("[DSS helper] Pulsar fetch skipped, no URL configured");
         return [];
       }
+      console.log("[DSS helper] Fetching Pulsar from", url);
       const res = await fetch(url);
       if (!res.ok) {
-        console.error("[DSS helper] Pulsar fetch HTTP", res.status);
+        console.error("[DSS helper] Pulsar fetch HTTP error", res.status);
         return [];
       }
 
       const text = await res.text();
+      console.log("[DSS helper] Pulsar raw data length:", text.length);
+
       let json;
       try {
         json = await parseStringPromise(text);
       } catch (err) {
-        console.error("[DSS helper] Pulsar response not XML", err);
+        console.error("[DSS helper] Pulsar XML parse error", err);
         return [];
       }
 
-      // Assuming the XML structure has a root 'records' element containing pulsar entries
       const records = (json.records && json.records.record) || [];
+      console.log("[DSS helper] Pulsar records count:", records.length);
+
       const result = records.map(p => ({
         type: "Pulsar",
         time: p.observationTime ? p.observationTime[0] : "",
@@ -171,7 +182,7 @@ module.exports = NodeHelper.create({
       return result;
 
     } catch (e) {
-      console.error("Pulsar fetch error", e);
+      console.error("[DSS helper] Pulsar fetch error", e);
       return [];
     }
   },
@@ -179,22 +190,26 @@ module.exports = NodeHelper.create({
   async fetchAPOD() {
     try {
       const url = this.config.apiUrls?.apod || "";
+      console.log("[DSS helper] Fetching APOD from", url);
       const res = await fetch(url);
       if (!res.ok) {
-        console.error("[DSS helper] APOD fetch HTTP", res.status);
+        console.error("[DSS helper] APOD fetch HTTP error", res.status);
         return [];
       }
 
       const text = await res.text();
+      console.log("[DSS helper] APOD raw data length:", text.length);
+
       let data;
       try {
         data = JSON.parse(text);
       } catch (err) {
-        console.error("[DSS helper] APOD response not JSON", err);
+        console.error("[DSS helper] APOD JSON parse error", err);
         return [];
       }
 
       if (!data.date) {
+        console.warn("[DSS helper] APOD response missing date");
         return [];
       }
 
@@ -210,7 +225,7 @@ module.exports = NodeHelper.create({
       return result;
 
     } catch (e) {
-      console.error("APOD fetch error", e);
+      console.error("[DSS helper] APOD fetch error", e);
       return [];
     }
   }
