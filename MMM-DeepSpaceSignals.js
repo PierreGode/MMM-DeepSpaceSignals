@@ -5,13 +5,13 @@ Module.register("MMM-DeepSpaceSignals", {
       frb: true,
       gravitational: true,
       pulsar: false,
-      apod: false
+      apod: true
     },
     apiUrls: {
       frb: "https://chime-frb-open-data.github.io/voevents/voevents.json",
       gravitational: "https://gwosc.org/eventapi/jsonfull/allevents/",
-      pulsar: "", // hanteras via extern Python-skript eller liknande
-      apod: "https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY"
+      pulsar: "https://www.herta-experiment.org/frbstats/catalogue.json",
+      apod: "https://api.nasa.gov/planetary/apod?api_key=DIN_NASA_API_NYCKEL"
     },
     minStrength: {
       frb: null,
@@ -51,31 +51,17 @@ Module.register("MMM-DeepSpaceSignals", {
     table.className = "dss-table";
 
     this.events.forEach(ev => {
+      console.log("[DSS] Rendering event:", ev);
       const row = document.createElement("tr");
-      row.className = "dss-row " + ev.level;
-
-      // Om APOD - visa bilden direkt i tabellen i en td, annars vanlig länk
-      let urlCell;
-      if (ev.type === "APOD" && ev.url) {
-        urlCell = `
-          <td class="dss-link">
-            <a href="${ev.url}" target="_blank" title="${ev.intensity}">
-              <img src="${ev.url}" alt="${ev.intensity}" style="max-height:50px; max-width:100px; object-fit:contain;">
-            </a>
-          </td>`;
-      } else {
-        urlCell = `
-          <td class="dss-link">
-            <a href="${ev.url || "#"}" target="_blank">link</a>
-          </td>`;
-      }
+      row.className = "dss-row " + (ev.level || "");
 
       row.innerHTML = `
-        <td class="dss-type">${ev.type}</td>
-        <td class="dss-time">${ev.time}</td>
-        <td class="dss-intensity">${ev.intensity || ""}</td>
-        ${urlCell}
+        <td class="dss-type">${ev.type || "No type"}</td>
+        <td class="dss-time">${ev.time || "No time"}</td>
+        <td class="dss-intensity">${ev.intensity || "No intensity"}</td>
+        <td class="dss-link"><a href="${ev.url || "#"}" target="_blank">link</a></td>
       `;
+
       table.appendChild(row);
     });
 
