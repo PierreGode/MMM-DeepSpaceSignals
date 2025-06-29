@@ -62,6 +62,7 @@ Add the module to the `modules` array in `config.js`:
     },
     apiUrls: {
       frb: "https://chime-frb-open-data.github.io/voevents/voevents.json",
+      frbBackup: "https://www.herta-experiment.org/frbstats/catalogue.json",
       gravitational: "https://gwosc.org/eventapi/jsonfull/allevents/",
       pulsar: "https://www.herta-experiment.org/frbstats/catalogue.json",
       apod: "https://api.nasa.gov/planetary/apod?api_key=*****"
@@ -116,13 +117,15 @@ The helper polls the following public APIs:
 | Source          | Description                         | API Key Required |
 |-----------------|-------------------------------------|------------------|
 | **CHIME/FRB**   | Recent Fast Radio Burst detections  | ❌ No            |
+| **CHIME/FRB (backup)** | Mirror of FRB events             | ❌ No            |
 | **LIGO/Virgo**  | Gravitational wave alerts           | ❌ No            |
 | **ATNF Pulsars**| Pulsar observations (JSON or script)| ❌ / Optional    |
 | **NASA APOD**   | Daily astronomy image + caption     | ✅ Yes (free)    |
 
 > When enabled, the module displays the APOD image and its explanation directly in the table if the media type is an image. The image is constrained to a maximum width of 200 px to fit nicely inside the module.
 
-If the FRB endpoint is unreachable (e.g., 404 error), the module loads a local fallback file:  
+If the primary FRB endpoint is unreachable (e.g., 404 error), the module
+tries the `frbBackup` URL. If that also fails, it loads the local file
 `data/frb_sample.json`.
 
 To get your own NASA API key, visit: [https://api.nasa.gov/](https://api.nasa.gov/)

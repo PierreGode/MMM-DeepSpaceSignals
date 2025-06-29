@@ -78,46 +78,55 @@ module.exports = NodeHelper.create({
   },
 
   async fetchFRB() {
-    try {
-      const url = this.config.apiUrls?.frb || "";
-      console.log("[DSS helper] Fetching FRB from", url);
-      const res = await fetch(url);
-      if (!res.ok) {
-        console.error("[DSS helper] FRB fetch HTTP error", res.status);
-        return this.loadLocalFRBSample();
-      }
+    const primary = this.config.apiUrls?.frb;
+    const backup = this.config.apiUrls?.frbBackup ||
+      "https://www.herta-experiment.org/frbstats/catalogue.json";
 
-      const text = await res.text();
-      console.log("[DSS helper] FRB raw data length:", text.length);
+    const urls = [primary, backup].filter(Boolean);
 
-      let data;
+    for (const url of urls) {
       try {
-        data = JSON.parse(text);
-      } catch (err) {
-        console.error("[DSS helper] FRB JSON parse error", err);
-        return [];
+        console.log("[DSS helper] Fetching FRB from", url);
+        const res = await fetch(url);
+        if (!res.ok) {
+          console.error("[DSS helper] FRB fetch HTTP error", res.status, "for", url);
+          continue;
+        }
+
+        const text = await res.text();
+        console.log("[DSS helper] FRB raw data length:", text.length);
+
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (err) {
+          console.error("[DSS helper] FRB JSON parse error", err);
+          continue;
+        }
+
+        const items = data.events || data.voevents || data || [];
+        console.log("[DSS helper] FRB parsed items count:", Array.isArray(items) ? items.length : Object.keys(items).length);
+
+        const arr = Array.isArray(items) ? items : Object.values(items);
+
+        const result = arr.slice(0, 5).map(item => ({
+          type: "FRB",
+          time: item.time || item.date || item.detected || item.datetime || "",
+          intensity: item.fluence || item.signal || item.snr || "",
+          url: item.url || item.voevent || item.link || "",
+          level: "red"
+        }));
+
+        console.log('[DSS helper] FRB events fetched', result.length);
+        return result;
+
+      } catch (e) {
+        console.error("[DSS helper] FRB fetch error", e);
       }
-
-      const items = data.events || data.voevents || data || [];
-      console.log("[DSS helper] FRB parsed items count:", Array.isArray(items) ? items.length : Object.keys(items).length);
-
-      const arr = Array.isArray(items) ? items : Object.values(items);
-
-      const result = arr.slice(0, 5).map(item => ({
-        type: "FRB",
-        time: item.time || item.date || item.detected || item.datetime || "",
-        intensity: item.fluence || item.signal || item.snr || "",
-        url: item.url || item.voevent || item.link || "",
-        level: "red"
-      }));
-
-      console.log('[DSS helper] FRB events fetched', result.length);
-      return result;
-
-    } catch (e) {
-      console.error("[DSS helper] FRB fetch error", e);
-      return this.loadLocalFRBSample();
     }
+
+    console.warn('[DSS helper] Falling back to local FRB sample');
+    return this.loadLocalFRBSample();
   },
 
   async fetchGravitational() {
