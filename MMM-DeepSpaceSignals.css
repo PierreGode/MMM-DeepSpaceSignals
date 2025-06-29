@@ -47,7 +47,7 @@
   text-decoration: underline;
 }
 .dss-apod-image {
-  max-width: 100%;
+  max-width: 200px;
   height: auto;
   display: block;
   margin: 4px 0;

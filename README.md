@@ -59,7 +59,7 @@ The helper polls a few public APIs:
 - **CHIME/FRB** – recent Fast Radio Burst detections
 - **LIGO/Virgo** – gravitational wave alerts
 - **ATNF Pulsar Database** – pulsar observations
- - **NASA APOD** – daily astronomy image and description. When enabled, the module displays the APOD image and its explanation directly in the table if the media type is an image.
+- **NASA APOD** – daily astronomy image and description. When enabled, the module displays the APOD image and its explanation directly in the table if the media type is an image. The image is constrained to a maximum width of 200&nbsp;px so it remains small within the module.
 
 The repository also includes a small Python helper script used for querying the
 ATNF database directly. If you plan to run it, install `psrqpy` and `astropy`
