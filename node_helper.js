@@ -47,6 +47,9 @@ module.exports = NodeHelper.create({
     }
     this.events = results;
     console.log('[DSS helper] Sending', results.length, 'events to module');
+    if (results.length) {
+      console.log('[DSS helper] Sample events to module:', JSON.stringify(results.slice(0, 3), null, 2));
+    }
     this.sendSocketNotification("DATA", results);
   },
 
@@ -127,13 +130,16 @@ module.exports = NodeHelper.create({
 
       const result = eventsArray.map(ev => ({
         type: "GW",
-        time: ev.time || ev.event_time || ev.event_date || ev.start_time || "No time",
-        intensity: ev.significance || ev.false_alarm_rate || ev.snr || "No intensity",
-        url: ev.url || ev.link || "#",
+        time: ev.time || ev.event_time || ev.event_date || ev.start_time || ev.gps_time || ev.date || "No time",
+        intensity: ev.significance || ev.false_alarm_rate || ev.snr || ev.far || ev.bayes_factor || "No intensity",
+        url: ev.url || ev.link || ev.superevent || "#",
         level: (ev.significance && ev.significance > 0.9) ? "red" : "yellow"
       }));
 
       console.log('[DSS helper] GW events fetched', result.length);
+      if (result.length) {
+        console.log('[DSS helper] GW sample events:', JSON.stringify(result.slice(0, 3), null, 2));
+      }
       return result;
 
     } catch (e) {
