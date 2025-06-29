@@ -33,8 +33,7 @@ module.exports = NodeHelper.create({
       if (!ev || !ev.type) return false;
       if (!ev.time || ev.time === 'No time') return false;
       if (!ev.intensity || ev.intensity === 'No intensity') return false;
-      if (ev.level === 'grey') return false;
-      return true;
+      return true; // keep offline events (level "grey")
     });
   },
 
