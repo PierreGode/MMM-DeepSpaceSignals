@@ -40,30 +40,42 @@ module.exports = NodeHelper.create({
 
   async fetchAll() {
     console.log('[DSS helper] Fetching all sources');
-    let results = [];
+    let events = [];
+    let apod = null;
+
     if (this.config.sources.frb) {
       const frb = await this.fetchFRB();
-      results = results.concat(frb);
+      events = events.concat(frb);
     }
+
     if (this.config.sources.gravitational) {
       const grav = await this.fetchGravitational();
-      results = results.concat(grav);
+      events = events.concat(grav);
     }
+
     if (this.config.sources.pulsar) {
       const pulsars = await this.fetchPulsar();
-      results = results.concat(pulsars);
+      events = events.concat(pulsars);
     }
+
     if (this.config.sources.apod) {
-      const apod = await this.fetchAPOD();
-      results = results.concat(apod);
+      const apodData = await this.fetchAPOD();
+      if (Array.isArray(apodData) && apodData.length) {
+        apod = apodData[0];
+      }
     }
-    const filtered = this.filterEvents(results);
+
+    const filtered = this.filterEvents(events);
     this.events = filtered;
+
+    const payload = { events: filtered, apod };
+
     console.log('[DSS helper] Sending', filtered.length, 'events to module');
     if (filtered.length) {
       console.log('[DSS helper] Sample events to module:', JSON.stringify(filtered.slice(0, 3), null, 2));
     }
-    this.sendSocketNotification("DATA", filtered);
+
+    this.sendSocketNotification('DATA', payload);
   },
 
   async fetchFRB() {
