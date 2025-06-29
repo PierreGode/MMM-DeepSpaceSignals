@@ -11,6 +11,8 @@ cd ~/MagicMirror/modules
 git clone <repository-url> MMM-DeepSpaceSignals
 cd MMM-DeepSpaceSignals
 npm install
+pip install psrqpy
+pip install astropy
 ```
 
 ## Configuration
