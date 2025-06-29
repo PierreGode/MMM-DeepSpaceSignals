@@ -26,6 +26,7 @@ Add the module to the `modules` array in `config.js`:
   position: "top_right",
   config: {
     updateInterval: 10 * 60 * 1000,
+    maxWidth: "340px",
     sources: {
       frb: true,
       gravitational: true,
@@ -49,6 +50,10 @@ Add the module to the `modules` array in `config.js`:
 
 ```
 
+`intensity` values depend on the data source: FRB events use fluence (Jy ms),
+gravitational waves show significance, and pulsars may report signal-to-noise
+ratio.
+
 ## Data Sources
 The helper polls a few public APIs:
 - **CHIME/FRB** – recent Fast Radio Burst detections
@@ -65,6 +70,9 @@ open data JSON file, while the others should be replaced with the appropriate
 endpoints for your setup in the `apiUrls` section of the module configuration.
 For the NASA APOD API you can use the `DEMO_KEY` or register your own API key at
 <https://api.nasa.gov/>.
+
+If the FRB endpoint is unreachable (404 or similar), the helper loads a small
+sample dataset from `data/frb_sample.json` included in this repository.
 
 ## License
 MIT
