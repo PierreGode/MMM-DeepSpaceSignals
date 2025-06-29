@@ -30,13 +30,13 @@ Add the module to the `modules` array in `config.js`:
       frb: true,
       gravitational: true,
       pulsar: false,
-      apod: false
+      apod: true
     },
     apiUrls: {
       frb: "https://chime-frb-open-data.github.io/voevents/voevents.json",
-      gravitational: "https://example.com/ligo/api",
-      pulsar: "https://pulsar.example.com/api",
-      apod: "https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY"
+      gravitational: "https://gwosc.org/eventapi/jsonfull/allevents/",
+      pulsar: "https://www.herta-experiment.org/frbstats/catalogue.json",
+      apod: "https://api.nasa.gov/planetary/apod?api_key=*****"
     },
     minStrength: {
       frb: null,
@@ -45,7 +45,8 @@ Add the module to the `modules` array in `config.js`:
       apod: null
     }
   }
-}
+},
+
 ```
 
 ## Data Sources
