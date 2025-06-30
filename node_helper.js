@@ -1,7 +1,7 @@
 const NodeHelper = require("node_helper");
 const { parseStringPromise } = require("xml2js");
 const fetch = require("node-fetch");
-const fs = require("fs");
+const fs = require("fs").promises;
 const path = require("path");
 
 module.exports = NodeHelper.create({
@@ -33,7 +33,7 @@ module.exports = NodeHelper.create({
       if (!ev || !ev.type) return false;
       if (!ev.time || ev.time === 'No time') return false;
       if (!ev.intensity || ev.intensity === 'No intensity') return false;
-      return true; // keep offline events (level "grey")
+      return true;
     });
   },
 
@@ -200,18 +200,27 @@ module.exports = NodeHelper.create({
         return [];
       }
       console.log("[DSS helper] Fetching Pulsar from", url);
-      const res = await fetch(url);
-      if (!res.ok) {
-        console.error("[DSS helper] Pulsar fetch HTTP error", res.status);
-        return [];
+
+      let text;
+
+      if (url.startsWith("http://") || url.startsWith("https://")) {
+        const res = await fetch(url);
+        if (!res.ok) {
+          console.error("[DSS helper] Pulsar fetch HTTP error", res.status);
+          return [];
+        }
+        text = await res.text();
+      } else {
+        // Lokal fil
+        const filePath = path.resolve(__dirname, url);
+        console.log("[DSS helper] Reading local pulsar file:", filePath);
+        text = await fs.readFile(filePath, { encoding: "utf-8" });
       }
 
-      const ct = res.headers.get("content-type") || "";
-      const text = await res.text();
       console.log("[DSS helper] Pulsar raw data length:", text.length);
 
       let records = [];
-      if (ct.includes("json")) {
+      if (text.trim().startsWith("{") || text.trim().startsWith("[")) {
         try {
           const json = JSON.parse(text);
           records = Array.isArray(json)
@@ -221,7 +230,7 @@ module.exports = NodeHelper.create({
           console.error("[DSS helper] Pulsar JSON parse error", jsonErr);
           return [];
         }
-      } else if (ct.includes("xml") || text.trim().startsWith("<")) {
+      } else if (text.trim().startsWith("<")) {
         try {
           const xml = await parseStringPromise(text);
           records = (xml.records && xml.records.record) || [];
@@ -230,7 +239,7 @@ module.exports = NodeHelper.create({
           return [];
         }
       } else {
-        console.error("[DSS helper] Pulsar unrecognized content-type", ct);
+        console.error("[DSS helper] Pulsar unrecognized content");
         return [];
       }
 
@@ -238,9 +247,9 @@ module.exports = NodeHelper.create({
 
       const result = records.map(p => ({
         type: "Pulsar",
-        time: p.observationTime?.[0] || p.time?.[0] || p.date?.[0] || p.time || p.date || "",
-        intensity: p.intensity?.[0] || p.snr?.[0] || p.period?.[0] || p.P0?.[0] || p.intensity || p.snr || p.period || p.P0 || "",
-        url: p.link?.[0] || p.url?.[0] || p.link || p.url || "",
+        time: (p.observationTime && p.observationTime[0]) || (p.time && p.time[0]) || p.date?.[0] || p.time || p.date || "",
+        intensity: (p.intensity && p.intensity[0]) || (p.snr && p.snr[0]) || (p.period && p.period[0]) || (p.P0 && p.P0[0]) || p.intensity || p.snr || p.period || p.P0 || "",
+        url: (p.link && p.link[0]) || (p.url && p.url[0]) || p.link || p.url || "",
         level: "green"
       }));
 
@@ -279,15 +288,15 @@ module.exports = NodeHelper.create({
         return [];
       }
 
-        const result = [{
-          type: "APOD",
-          time: data.date,
-          intensity: data.title || "",
-          url: data.url || data.hdurl || "",
-          level: "blue",
-          media_type: data.media_type,
-          explanation: data.explanation || ""
-        }];
+      const result = [{
+        type: "APOD",
+        time: data.date,
+        intensity: data.title || "",
+        url: data.url || data.hdurl || "",
+        level: "blue",
+        media_type: data.media_type,
+        explanation: data.explanation || ""
+      }];
 
       console.log('[DSS helper] APOD fetched', result.length);
       return result;
