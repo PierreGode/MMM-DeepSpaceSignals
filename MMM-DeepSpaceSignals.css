@@ -55,11 +55,12 @@
 }
 
 .dss-apod-caption.scrolling {
-  /* Scroll from bottom to top and restart without bouncing */
-  animation: dss-scroll 40s linear infinite;
+  /* Scroll from bottom to top, pause 10s, then restart */
+  animation: dss-scroll 50s linear infinite;
 }
 
 @keyframes dss-scroll {
-  from { transform: translateY(0); }
-  to { transform: translateY(calc(-1 * var(--scroll-distance))); }
+  0%   { transform: translateY(0); }
+  80%  { transform: translateY(calc(-1 * var(--scroll-distance))); }
+  100% { transform: translateY(calc(-1 * var(--scroll-distance))); }
 }
