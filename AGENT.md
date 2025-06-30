@@ -44,7 +44,7 @@ config.js:
     apiUrls: {
       frb: "https://chime-frb-open-data.github.io/voevents/voevents.json",
       gravitational: "https://gwosc.org/eventapi/jsonfull/allevents/",
-      pulsar: "https://www.herta-experiment.org/frbstats/catalogue.json",
+      pulsar: "pulsars.json",
       apod: "https://api.nasa.gov/planetary/apod?api_key=*****"
     },
     minStrength: {
@@ -63,7 +63,7 @@ config.js:
 | Type              | Example API URL                                                                                  | Format        | Auth     |
 |-------------------|--------------------------------------------------------------------------------------------------|--------------|----------|
 | FRB               | https://chime-frb-open-data.github.io/voevents/voevents.json                                     | JSON         | No       |
-| FRB (backup)      | https://www.herta-experiment.org/frbstats/catalogue.json                                         | JSON         | No       |
+| FRB (backup)      | https://raw.githubusercontent.com/HeRTA/FRBSTATS/main/catalogue.json                                         | JSON         | No       |
 | Gravitational GW  | https://gwosc.org/eventapi/jsonfull/allevents/                                                   | JSON         | No       |
 | Pulsar            | Use psrqpy script to generate `/home/pi/pulsars.json` from ATNF catalog                          | JSON         | No       |
 | NASA APOD         | https://api.nasa.gov/planetary/apod?api_key=YOUR_KEY                                             | JSON         | Yes*     |
@@ -156,7 +156,7 @@ or a blank/empty table:
 ## 🔗 Useful Links
 
 - [CHIME/FRB Open Data](https://chime-frb-open-data.github.io/)
-- [FRBSTATS Catalog](https://www.herta-experiment.org/frbstats/)
+- [FRBSTATS Catalog](https://github.com/HeRTA/FRBSTATS)
 - [LIGO/Virgo GWOSC Events](https://gwosc.org/)
 - [NASA APOD](https://apod.nasa.gov/apod/astropix.html)
 - [NASA API Registration](https://api.nasa.gov/)
