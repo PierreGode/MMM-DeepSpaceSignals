@@ -212,21 +212,21 @@ module.exports = NodeHelper.create({
       }
       console.log("[DSS helper] Fetching Pulsar from", url);
 
-      // Om lokal fil och saknas, ladda ner automatiskt
+      // Om lokal fil och saknas, kör Python-scriptet för att skapa den
       if (!url.startsWith("http://") && !url.startsWith("https://")) {
         const filePath = path.resolve(__dirname, url);
         try {
           await fsp.access(filePath);
           console.log(`[DSS helper] Local pulsar file exists: ${filePath}`);
         } catch {
-          console.log(`[DSS helper] Local pulsar file missing. Laddar ner till ${filePath} ...`);
+          console.log(`[DSS helper] Local pulsar file missing. Running pulsar_fetcher.py ...`);
           await new Promise((resolve, reject) => {
-            exec(`wget https://raw.githubusercontent.com/HeRTA/FRBSTATS/main/catalogue.json -O ${filePath}`, (error, stdout, stderr) => {
+            exec("python3 pulsar_fetcher.py", { cwd: __dirname }, (error, stdout, stderr) => {
               if (error) {
-                console.error(`[DSS helper] Fel vid nedladdning av pulsars.json: ${error.message}`);
+                console.error(`[DSS helper] pulsar_fetcher.py error: ${error.message}`);
                 return reject(error);
               }
-              console.log(`[DSS helper] pulsars.json nedladdad.`);
+              console.log("[DSS helper] pulsar_fetcher.py finished");
               resolve();
             });
           });

@@ -31,15 +31,15 @@ npm install
 
 ## 🐍 Optional: Python Pulsar Support (ATNF Fetcher)
 
-If you want to use the included Python script `pulsar_fetcher.py` to fetch pulsar data from the ATNF catalog, install the required Python packages.
-
-**On Raspberry Pi:**
+If the optional Python dependencies are installed, the Node helper will run
+`pulsar_fetcher.py` automatically the first time it needs a local `pulsars.json`
+file. Install the required packages, for example on Raspberry Pi:
 
 ```bash
 pip install psrqpy astropy --break-system-packages
 ```
 
-This will generate a `pulsars.json` file that the module can use.
+The script queries the ATNF catalogue and writes the results to `pulsars.json`.
 
 ---
 
