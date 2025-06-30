@@ -11,9 +11,9 @@ Module.register("MMM-DeepSpaceSignals", {
     },
     apiUrls: {
       frb: "https://chime-frb-open-data.github.io/voevents/voevents.json",
-      frbBackup: "https://www.herta-experiment.org/frbstats/catalogue.json",
+      frbBackup: "https://raw.githubusercontent.com/HeRTA/FRBSTATS/main/catalogue.json",
       gravitational: "https://gwosc.org/eventapi/jsonfull/allevents/",
-      pulsar: "https://www.herta-experiment.org/frbstats/catalogue.json",
+      pulsar: "pulsars.json",
       apod: "https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY"
     },
     minStrength: {}

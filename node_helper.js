@@ -80,7 +80,7 @@ module.exports = NodeHelper.create({
   async fetchFRB() {
     const primary = this.config.apiUrls?.frb;
     const backup = this.config.apiUrls?.frbBackup ||
-      "https://www.herta-experiment.org/frbstats/catalogue.json";
+      "https://raw.githubusercontent.com/HeRTA/FRBSTATS/main/catalogue.json";
 
     const urls = [primary, backup].filter(Boolean);
 
