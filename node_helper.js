@@ -6,6 +6,23 @@ const fsp = require("fs").promises;
 const path = require("path");
 const { exec } = require("child_process");
 
+async function readLocalFileFlexible(relPath) {
+  const attempts = [
+    path.resolve(__dirname, relPath),
+    path.join(__dirname, "data", path.basename(relPath))
+  ];
+  for (const p of attempts) {
+    try {
+      const text = await fsp.readFile(p, { encoding: "utf-8" });
+      console.log("[DSS helper] Reading local file:", p);
+      return text;
+    } catch (err) {
+      console.warn("[DSS helper] Local file not found at", p);
+    }
+  }
+  throw new Error(`Local file not found: ${relPath}`);
+}
+
 module.exports = NodeHelper.create({
   start() {
     this.config = {};
@@ -105,10 +122,12 @@ module.exports = NodeHelper.create({
             continue;
           }
         } else {
-          // Lokal fil
-          const filePath = path.resolve(__dirname, url);
-          console.log("[DSS helper] Reading local FRB file:", filePath);
-          text = await fsp.readFile(filePath, { encoding: "utf-8" });
+          try {
+            text = await readLocalFileFlexible(url);
+          } catch (err) {
+            console.error("[DSS helper] FRB local file error", err);
+            continue;
+          }
         }
 
         console.log("[DSS helper] FRB raw data length:", text.length);
@@ -243,9 +262,12 @@ module.exports = NodeHelper.create({
         }
         text = await res.text();
       } else {
-        const filePath = path.resolve(__dirname, url);
-        console.log("[DSS helper] Reading local pulsar file:", filePath);
-        text = await fsp.readFile(filePath, { encoding: "utf-8" });
+        try {
+          text = await readLocalFileFlexible(url);
+        } catch (err) {
+          console.error("[DSS helper] Pulsar local file error", err);
+          return [];
+        }
       }
 
       console.log("[DSS helper] Pulsar raw data length:", text.length);
