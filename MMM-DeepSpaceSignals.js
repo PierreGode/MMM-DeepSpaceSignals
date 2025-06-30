@@ -54,7 +54,7 @@ Module.register("MMM-DeepSpaceSignals", {
     const thead = document.createElement("thead");
     const headerRow = document.createElement("tr");
 
-    ["Type", "Time", "Intensity", "Link"].forEach(text => {
+    ["Type", "Time", "Intensity"].forEach(text => {
       const th = document.createElement("th");
       th.innerText = text;
       headerRow.appendChild(th);
@@ -81,15 +81,6 @@ Module.register("MMM-DeepSpaceSignals", {
       strengthCell.innerText = event.intensity !== null ? event.intensity : "";
       row.appendChild(strengthCell);
 
-      const linkCell = document.createElement("td");
-      if (event.url) {
-        const a = document.createElement("a");
-        a.href = event.url;
-        a.innerText = "🔗";
-        a.target = "_blank";
-        linkCell.appendChild(a);
-      }
-      row.appendChild(linkCell);
 
       tbody.appendChild(row);
     });
