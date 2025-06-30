@@ -1,7 +1,8 @@
 const NodeHelper = require("node_helper");
 const { parseStringPromise } = require("xml2js");
 const fetch = require("node-fetch");
-const fs = require("fs").promises;
+const fs = require("fs");
+const fsp = require("fs").promises;
 const path = require("path");
 
 module.exports = NodeHelper.create({
@@ -87,20 +88,29 @@ module.exports = NodeHelper.create({
     for (const url of urls) {
       try {
         console.log("[DSS helper] Fetching FRB from", url);
-        const res = await fetch(url);
-        if (!res.ok) {
-          console.error("[DSS helper] FRB fetch HTTP error", res.status, "for", url);
-          continue;
+        let text;
+
+        if (url.startsWith("http://") || url.startsWith("https://")) {
+          const res = await fetch(url);
+          if (!res.ok) {
+            console.error("[DSS helper] FRB fetch HTTP error", res.status, "for", url);
+            continue;
+          }
+          text = await res.text();
+
+          const ct = res.headers.get("content-type") || "";
+          if (!ct.includes("json")) {
+            console.error("[DSS helper] FRB fetch non-JSON content-type", ct);
+            continue;
+          }
+        } else {
+          // Lokal fil
+          const filePath = path.resolve(__dirname, url);
+          console.log("[DSS helper] Reading local FRB file:", filePath);
+          text = await fsp.readFile(filePath, { encoding: "utf-8" });
         }
 
-        const ct = res.headers.get("content-type") || "";
-        const text = await res.text();
         console.log("[DSS helper] FRB raw data length:", text.length);
-
-        if (!ct.includes("json")) {
-          console.error("[DSS helper] FRB fetch non-JSON content-type", ct);
-          continue;
-        }
 
         let data;
         try {
@@ -194,12 +204,17 @@ module.exports = NodeHelper.create({
 
   async fetchPulsar() {
     try {
-      const url = this.config.apiUrls?.pulsar || "";
+      let url = this.config.apiUrls?.pulsar || "";
       if (!url) {
         console.log("[DSS helper] Pulsar fetch skipped, no URL configured");
         return [];
       }
       console.log("[DSS helper] Fetching Pulsar from", url);
+
+      // Fix för dubbel sökväg, om sådan uppstår
+      if (url.startsWith("modules/MMM-DeepSpaceSignals/modules/MMM-DeepSpaceSignals")) {
+        url = url.replace("modules/MMM-DeepSpaceSignals/modules/MMM-DeepSpaceSignals", "modules/MMM-DeepSpaceSignals");
+      }
 
       let text;
 
@@ -211,10 +226,9 @@ module.exports = NodeHelper.create({
         }
         text = await res.text();
       } else {
-        // Lokal fil
         const filePath = path.resolve(__dirname, url);
         console.log("[DSS helper] Reading local pulsar file:", filePath);
-        text = await fs.readFile(filePath, { encoding: "utf-8" });
+        text = await fsp.readFile(filePath, { encoding: "utf-8" });
       }
 
       console.log("[DSS helper] Pulsar raw data length:", text.length);
