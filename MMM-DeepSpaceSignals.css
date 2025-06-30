@@ -23,12 +23,24 @@
   background-color: rgba(255, 0, 0, 0.2);
 }
 
+.dss-row.orange {
+  background-color: rgba(255, 165, 0, 0.2);
+}
+
 .dss-row.yellow {
   background-color: rgba(255, 255, 0, 0.2);
 }
 
 .dss-row.green {
   background-color: rgba(0, 255, 0, 0.2);
+}
+
+.dss-row.blue {
+  background-color: rgba(0, 0, 255, 0.2);
+}
+
+.dss-row.grey {
+  background-color: rgba(128, 128, 128, 0.2);
 }
 
 .dss-apod {

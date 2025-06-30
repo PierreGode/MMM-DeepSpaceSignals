@@ -109,13 +109,24 @@ module.exports = NodeHelper.create({
 
         const arr = Array.isArray(items) ? items : Object.values(items);
 
-        const result = arr.slice(0, 5).map(item => ({
-          type: "FRB",
-          time: item.time || item.date || item.detected || item.datetime || "",
-          intensity: item.fluence || item.signal || item.snr || "",
-          url: item.url || item.voevent || item.link || "",
-          level: "red"
-        }));
+        const result = arr.slice(0, 5).map(item => {
+          const fluence = parseFloat(item.fluence);
+          let level = "grey";
+          if (!isNaN(fluence)) {
+            if (fluence > 100) level = "red";
+            else if (fluence > 20) level = "orange";
+            else if (fluence >= 5) level = "yellow";
+            else if (fluence >= 1) level = "green";
+            else level = "blue";
+          }
+          return {
+            type: "FRB",
+            time: item.time || item.date || item.detected || item.datetime || "",
+            intensity: item.fluence || item.signal || item.snr || "",
+            url: item.url || item.voevent || item.link || "",
+            level
+          };
+        });
 
         console.log('[DSS helper] FRB events fetched', result.length);
         return result;
@@ -271,13 +282,24 @@ module.exports = NodeHelper.create({
       const raw = fs.readFileSync(file, 'utf8');
       const json = JSON.parse(raw);
       const arr = Array.isArray(json) ? json : (json.events || []);
-      return arr.map(item => ({
-        type: 'FRB',
-        time: item.time || item.date || '',
-        intensity: item.fluence || item.signal || '',
-        url: item.url || '',
-        level: 'grey'
-      }));
+      return arr.map(item => {
+        const fluence = parseFloat(item.fluence);
+        let level = 'grey';
+        if (!isNaN(fluence)) {
+          if (fluence > 100) level = 'red';
+          else if (fluence > 20) level = 'orange';
+          else if (fluence >= 5) level = 'yellow';
+          else if (fluence >= 1) level = 'green';
+          else level = 'blue';
+        }
+        return {
+          type: 'FRB',
+          time: item.time || item.date || '',
+          intensity: item.fluence || item.signal || '',
+          url: item.url || '',
+          level
+        };
+      });
     } catch (err) {
       console.error('[DSS helper] Failed to load local FRB sample', err);
       return [{
