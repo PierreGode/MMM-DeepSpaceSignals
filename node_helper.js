@@ -4,6 +4,7 @@ const fetch = require("node-fetch");
 const fs = require("fs");
 const fsp = require("fs").promises;
 const path = require("path");
+const { exec } = require("child_process");
 
 module.exports = NodeHelper.create({
   start() {
@@ -211,9 +212,25 @@ module.exports = NodeHelper.create({
       }
       console.log("[DSS helper] Fetching Pulsar from", url);
 
-      // Fix för dubbel sökväg, om sådan uppstår
-      if (url.startsWith("modules/MMM-DeepSpaceSignals/modules/MMM-DeepSpaceSignals")) {
-        url = url.replace("modules/MMM-DeepSpaceSignals/modules/MMM-DeepSpaceSignals", "modules/MMM-DeepSpaceSignals");
+      // Om lokal fil och saknas, ladda ner automatiskt
+      if (!url.startsWith("http://") && !url.startsWith("https://")) {
+        const filePath = path.resolve(__dirname, url);
+        try {
+          await fsp.access(filePath);
+          console.log(`[DSS helper] Local pulsar file exists: ${filePath}`);
+        } catch {
+          console.log(`[DSS helper] Local pulsar file missing. Laddar ner till ${filePath} ...`);
+          await new Promise((resolve, reject) => {
+            exec(`wget https://raw.githubusercontent.com/HeRTA/FRBSTATS/main/catalogue.json -O ${filePath}`, (error, stdout, stderr) => {
+              if (error) {
+                console.error(`[DSS helper] Fel vid nedladdning av pulsars.json: ${error.message}`);
+                return reject(error);
+              }
+              console.log(`[DSS helper] pulsars.json nedladdad.`);
+              resolve();
+            });
+          });
+        }
       }
 
       let text;
