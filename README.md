@@ -77,10 +77,22 @@ Add the module to the `modules` array in `config.js`:
 }
 ```
 
-`intensity` values depend on the data source:  
-- FRB events use **fluence (Jy·ms)**  
-- Gravitational waves show **significance**  
+`intensity` values depend on the data source:
+- FRB events use **fluence (Jy·ms)**
+- Gravitational waves show **significance**
 - Pulsars may report **signal-to-noise ratio (SNR)**
+
+### Intensity Levels
+
+The value in the **Intensity** column is color‑coded to make reading the table easier:
+
+| Fluence (Jy·ms) | Interpretation | Notes |
+|-------------------|---------------|-------|
+| <span style="color:#4d4dff;">&lt; 1</span> | Very weak | Hard to detect, may be near background noise |
+| <span style="color:#00cc00;">1 – 5</span> | Weak to moderate | Common range for many typical FRBs |
+| <span style="color:#cccc00;">5 – 20</span> | Moderate to strong | Likely detectable with medium-sized radio arrays |
+| <span style="color:#ff8800;">&gt; 20</span> | Strong or rare | May indicate nearby or unusually energetic source |
+| <span style="color:#ff4040;">&gt; 100</span> | Extremely strong (rare) | Often referred to as "giant bursts" or hyperflares |
 
 ---
 
