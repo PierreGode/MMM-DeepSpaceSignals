@@ -51,17 +51,20 @@ Module.register("MMM-DeepSpaceSignals", {
     const table = document.createElement("table");
     table.className = "dss-table";
 
-    const thead = document.createElement("thead");
-    const headerRow = document.createElement("tr");
+    // Only show header if there are events to display
+    if (this.events.length > 0) {
+      const thead = document.createElement("thead");
+      const headerRow = document.createElement("tr");
 
-    ["Type", "Time", "Intensity"].forEach(text => {
-      const th = document.createElement("th");
-      th.innerText = text;
-      headerRow.appendChild(th);
-    });
+      ["Type", "Time", "Intensity"].forEach(text => {
+        const th = document.createElement("th");
+        th.innerText = text;
+        headerRow.appendChild(th);
+      });
 
-    thead.appendChild(headerRow);
-    table.appendChild(thead);
+      thead.appendChild(headerRow);
+      table.appendChild(thead);
+    }
 
     const tbody = document.createElement("tbody");
 
