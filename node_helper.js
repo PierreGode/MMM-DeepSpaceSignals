@@ -93,8 +93,14 @@ module.exports = NodeHelper.create({
           continue;
         }
 
+        const ct = res.headers.get("content-type") || "";
         const text = await res.text();
         console.log("[DSS helper] FRB raw data length:", text.length);
+
+        if (!ct.includes("json")) {
+          console.error("[DSS helper] FRB fetch non-JSON content-type", ct);
+          continue;
+        }
 
         let data;
         try {
@@ -200,17 +206,22 @@ module.exports = NodeHelper.create({
         return [];
       }
 
+      const ct = res.headers.get("content-type") || "";
       const text = await res.text();
       console.log("[DSS helper] Pulsar raw data length:", text.length);
 
       let records = [];
-      try {
-        const json = JSON.parse(text);
-        records = Array.isArray(json)
-          ? json
-          : json.records || json.items || json.data || [];
-      } catch (jsonErr) {
-        console.warn("[DSS helper] Pulsar JSON parse failed, trying XML");
+      if (ct.includes("json")) {
+        try {
+          const json = JSON.parse(text);
+          records = Array.isArray(json)
+            ? json
+            : json.records || json.items || json.data || [];
+        } catch (jsonErr) {
+          console.error("[DSS helper] Pulsar JSON parse error", jsonErr);
+          return [];
+        }
+      } else if (ct.includes("xml") || text.trim().startsWith("<")) {
         try {
           const xml = await parseStringPromise(text);
           records = (xml.records && xml.records.record) || [];
@@ -218,6 +229,9 @@ module.exports = NodeHelper.create({
           console.error("[DSS helper] Pulsar parse error", xmlErr);
           return [];
         }
+      } else {
+        console.error("[DSS helper] Pulsar unrecognized content-type", ct);
+        return [];
       }
 
       console.log("[DSS helper] Pulsar records count:", records.length);

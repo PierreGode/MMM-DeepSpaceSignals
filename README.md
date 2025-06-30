@@ -61,8 +61,8 @@ Add the module to the `modules` array in `config.js`:
       apod: true
     },
     apiUrls: {
-      frb: "https://chime-frb-open-data.github.io/voevents/voevents.json",
-      frbBackup: "https://www.herta-experiment.org/frbstats/catalogue.json",
+      frb: "data/frb_sample.json",
+      frbBackup: null,
       gravitational: "https://gwosc.org/eventapi/jsonfull/allevents/",
       pulsar: "pulsars.json",
       apod: "https://api.nasa.gov/planetary/apod?api_key=*****"
