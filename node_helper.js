@@ -203,22 +203,30 @@ module.exports = NodeHelper.create({
       const text = await res.text();
       console.log("[DSS helper] Pulsar raw data length:", text.length);
 
-      let json;
+      let records = [];
       try {
-        json = await parseStringPromise(text);
-      } catch (err) {
-        console.error("[DSS helper] Pulsar XML parse error", err);
-        return [];
+        const json = JSON.parse(text);
+        records = Array.isArray(json)
+          ? json
+          : json.records || json.items || json.data || [];
+      } catch (jsonErr) {
+        console.warn("[DSS helper] Pulsar JSON parse failed, trying XML");
+        try {
+          const xml = await parseStringPromise(text);
+          records = (xml.records && xml.records.record) || [];
+        } catch (xmlErr) {
+          console.error("[DSS helper] Pulsar parse error", xmlErr);
+          return [];
+        }
       }
 
-      const records = (json.records && json.records.record) || [];
       console.log("[DSS helper] Pulsar records count:", records.length);
 
       const result = records.map(p => ({
         type: "Pulsar",
-        time: p.observationTime ? p.observationTime[0] : "",
-        intensity: p.intensity ? p.intensity[0] : "",
-        url: p.link ? p.link[0] : "",
+        time: p.observationTime?.[0] || p.time?.[0] || p.date?.[0] || p.time || p.date || "",
+        intensity: p.intensity?.[0] || p.snr?.[0] || p.period?.[0] || p.P0?.[0] || p.intensity || p.snr || p.period || p.P0 || "",
+        url: p.link?.[0] || p.url?.[0] || p.link || p.url || "",
         level: "green"
       }));
 
