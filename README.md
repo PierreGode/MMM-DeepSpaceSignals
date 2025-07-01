@@ -32,14 +32,18 @@ npm install
 ## 🐍 Optional: Python Pulsar Support (ATNF Fetcher)
 
 If the optional Python dependencies are installed, the Node helper will run
-`pulsar_fetcher.py` automatically the first time it needs a local `pulsars.json`
-file. Install the required packages, for example on Raspberry Pi:
+`pulsar_fetcher.py` automatically the first time it needs a local
+`pulsars.json` file. You can also point `apiUrls.pulsar` directly to a Python
+script (e.g. `fetch_pulsars.py`). If the URL ends with `.py`, the helper
+executes the script and expects JSON on stdout. Install the required packages,
+for example on Raspberry Pi:
 
 ```bash
 pip install psrqpy astropy --break-system-packages
 ```
 
-The script queries the ATNF catalogue and writes the results to `pulsars.json`.
+The example scripts query the ATNF catalogue and either write the results to
+`pulsars.json` or output JSON directly.
 
 ---
 
@@ -64,7 +68,7 @@ Add the module to the `modules` array in `config.js`:
       frb: "data/frb_sample.json",
       frbBackup: null,
       gravitational: "https://gwosc.org/eventapi/jsonfull/allevents/",
-      pulsar: "pulsars.json",
+      pulsar: "fetch_pulsars.py",
       apod: "https://api.nasa.gov/planetary/apod?api_key=*****"
     },
     minStrength: {
