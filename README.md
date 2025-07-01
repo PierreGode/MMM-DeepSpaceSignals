@@ -33,10 +33,11 @@ npm install
 
 If the optional Python dependencies are installed, the Node helper will run
 `pulsar_fetcher.py` automatically the first time it needs a local
-`pulsars.json` file. You can also point `apiUrls.pulsar` directly to a Python
-script (e.g. `fetch_pulsars.py`). If the URL ends with `.py`, the helper
-executes the script and expects JSON on stdout. Install the required packages,
-for example on Raspberry Pi:
+`pulsars.json` file. The script now writes this file to the module directory so
+the helper can load it without needing a specific working directory. You can
+also point `apiUrls.pulsar` directly to a Python script (e.g. `fetch_pulsars.py`).
+If the URL ends with `.py`, the helper executes the script and expects JSON on
+stdout. Install the required packages, for example on Raspberry Pi:
 
 ```bash
 pip install psrqpy astropy --break-system-packages

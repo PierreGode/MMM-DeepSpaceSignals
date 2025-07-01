@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 from psrqpy import QueryATNF
 
 def main():
@@ -20,7 +21,8 @@ def main():
         })
 
     logging.info("[DSS py] writing %d pulsars to file", len(pulsars))
-    with open("modules/MMM-DeepSpaceSignals/pulsars.json", "w") as f:
+    out_path = os.path.join(os.path.dirname(__file__), "pulsars.json")
+    with open(out_path, "w") as f:
         json.dump(pulsars, f)
 
 if __name__ == "__main__":
