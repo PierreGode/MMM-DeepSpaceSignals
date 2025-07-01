@@ -284,10 +284,20 @@ module.exports = NodeHelper.create({
 
       console.log("[DSS helper] Pulsar raw data length:", text.length);
 
+      // Trim any warnings or log lines before the JSON/XML content
+      let cleaned = text.trim();
+      const jsonStart = cleaned.search(/[\[{]/);
+      if (jsonStart > 0) {
+        console.warn(
+          `[DSS helper] Pulsar output has ${jsonStart} leading non-JSON characters, trimming`
+        );
+        cleaned = cleaned.slice(jsonStart);
+      }
+
       let records = [];
-      if (text.trim().startsWith("{") || text.trim().startsWith("[")) {
+      if (cleaned.startsWith("{") || cleaned.startsWith("[")) {
         try {
-          const json = JSON.parse(text);
+          const json = JSON.parse(cleaned);
           records = Array.isArray(json)
             ? json
             : json.records || json.items || json.data || [];
@@ -295,9 +305,9 @@ module.exports = NodeHelper.create({
           console.error("[DSS helper] Pulsar JSON parse error", jsonErr);
           return [];
         }
-      } else if (text.trim().startsWith("<")) {
+      } else if (cleaned.startsWith("<")) {
         try {
-          const xml = await parseStringPromise(text);
+          const xml = await parseStringPromise(cleaned);
           records = (xml.records && xml.records.record) || [];
         } catch (xmlErr) {
           console.error("[DSS helper] Pulsar parse error", xmlErr);
