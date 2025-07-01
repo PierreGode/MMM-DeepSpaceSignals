@@ -23,11 +23,45 @@ async function readLocalFileFlexible(relPath) {
   throw new Error(`Local file not found: ${relPath}`);
 }
 
+// Run fetch_pulsars.py and write pulsars.json
+function runFetchPulsarsPy() {
+  const scriptPath = path.resolve(__dirname, "fetch_pulsars.py");
+  console.log("[DSS helper] Running fetch_pulsars.py ...");
+  exec(`python3 "${scriptPath}"`, { cwd: __dirname }, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`[DSS helper] fetch_pulsars.py error: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.warn(`[DSS helper] fetch_pulsars.py stderr: ${stderr}`);
+    }
+    try {
+      // Write stdout directly to pulsars.json (if not already done by script)
+      if (stdout && stdout.trim().length) {
+        const outPath = path.resolve(__dirname, "pulsars.json");
+        fs.writeFileSync(outPath, stdout.trim(), { encoding: "utf-8" });
+        console.log("[DSS helper] fetch_pulsars.py wrote to pulsars.json");
+      }
+    } catch (e) {
+      console.error("[DSS helper] Error writing pulsars.json", e);
+    }
+  });
+}
+
 module.exports = NodeHelper.create({
   start() {
     this.config = {};
     this.events = [];
     console.log('[DSS helper] started');
+
+    // Always run fetch_pulsars.py at start
+    runFetchPulsarsPy();
+
+    // Schedule it to run every hour (3600000 ms)
+    if (this.pulsarPyTimer) clearInterval(this.pulsarPyTimer);
+    this.pulsarPyTimer = setInterval(() => {
+      runFetchPulsarsPy();
+    }, 3600000);
   },
 
   socketNotificationReceived(notification, payload) {
@@ -237,7 +271,7 @@ module.exports = NodeHelper.create({
         try {
           const scriptPath = path.resolve(__dirname, url);
           text = await new Promise((resolve, reject) => {
-            exec(`python3 ${scriptPath}`, { cwd: __dirname }, (error, stdout, stderr) => {
+            exec(`python3 "${scriptPath}"`, { cwd: __dirname }, (error, stdout, stderr) => {
               if (error) {
                 console.error(`[DSS helper] ${url} error: ${error.message}`);
                 return reject(error);
