@@ -231,8 +231,25 @@ module.exports = NodeHelper.create({
       }
       console.log("[DSS helper] Fetching Pulsar from", url);
 
-      // Om lokal fil och saknas, kör Python-scriptet för att skapa den
-      if (!url.startsWith("http://") && !url.startsWith("https://")) {
+      let text;
+
+      if (url.endsWith(".py")) {
+        try {
+          const scriptPath = path.resolve(__dirname, url);
+          text = await new Promise((resolve, reject) => {
+            exec(`python3 ${scriptPath}`, { cwd: __dirname }, (error, stdout, stderr) => {
+              if (error) {
+                console.error(`[DSS helper] ${url} error: ${error.message}`);
+                return reject(error);
+              }
+              resolve(stdout);
+            });
+          });
+        } catch (err) {
+          console.error("[DSS helper] Pulsar script execution error", err);
+          return [];
+        }
+      } else if (!url.startsWith("http://") && !url.startsWith("https://")) {
         const filePath = path.resolve(__dirname, url);
         try {
           await fsp.access(filePath);
@@ -250,24 +267,19 @@ module.exports = NodeHelper.create({
             });
           });
         }
-      }
-
-      let text;
-
-      if (url.startsWith("http://") || url.startsWith("https://")) {
-        const res = await fetch(url);
-        if (!res.ok) {
-          console.error("[DSS helper] Pulsar fetch HTTP error", res.status);
-          return [];
-        }
-        text = await res.text();
-      } else {
         try {
           text = await readLocalFileFlexible(url);
         } catch (err) {
           console.error("[DSS helper] Pulsar local file error", err);
           return [];
         }
+      } else if (url.startsWith("http://") || url.startsWith("https://")) {
+        const res = await fetch(url);
+        if (!res.ok) {
+          console.error("[DSS helper] Pulsar fetch HTTP error", res.status);
+          return [];
+        }
+        text = await res.text();
       }
 
       console.log("[DSS helper] Pulsar raw data length:", text.length);
