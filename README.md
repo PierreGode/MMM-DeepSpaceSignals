@@ -45,6 +45,11 @@ pip install psrqpy astropy --break-system-packages
 The example scripts query the ATNF catalogue and either write the results to
 `pulsars.json` or output JSON directly.
 
+If your Python script emits runtime warnings to stdout, earlier versions of the
+helper could fail with a **"Pulsar unrecognized content"** message. The helper
+now trims non‑JSON lines before parsing so such warnings no longer break the
+parsing step.
+
 ---
 
 ## ⚙️ Configuration
